@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="//cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="text" placeholder="Item Name" id="item_name">
+    <input type="text" placeholder="Rate" id="rate">
+    <button onclick="add()">ADD</button>
+
+    <br>
+    <table id="item_table">
+    </table>
+
+
+</body>
+<script>
+    function add() {
+        const data = {
+            itemName: $('#item_name').val(),
+            rate: $('#rate').val(),
+        }
+        fetch('/api/item/add', {
+            method: "POST",
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(data)
+        }).then(r => r.text())
+            .then(data => {
+                getTable();
+                alert(data);
+            })
+    }
+
+
+    let itemTable;
+
+    function getTable() {
+
+        // Fetch / GET the list of data as JSON
+        fetch('/api/item/list').then(r => r.json())
+            .then(data => {
+                if (itemTable) itemTable.destroy();
+
+                itemTable = $('#item_table').DataTable({
+                    data,
+                    columns: [
+                        { data: 'id', title: "ID" },
+                        { data: 'item_name', title: "Item Name" },
+                        { data: 'rate', title: "Rate" },
+
+                    ]
+                });
+            }
+            )
+    }
+
+    getTable();
+</Script>
+
+</html>
